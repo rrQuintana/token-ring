@@ -3,11 +3,16 @@ import socket
 import threading
 import time
 
+Roberto = '175.1.58.24'
+Oliver = '175.1.57.71'
+Jose = '175.1.61.58'
+
+
 # Dirección IP del host actual
-my_host = '175.1.58.24'
+my_host = Roberto
 
 # Lista de direcciones IP de los otros hosts en el anillo
-hostList = ["175.1.57.71", "175.1.61.58"]
+hostList = [Oliver, Jose]
 
 
 # Puerto para la comunicación
