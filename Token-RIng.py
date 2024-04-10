@@ -49,7 +49,7 @@ def send_token(host, port, token):
 # Función para simular la ejecución de una tarea
 def execute_task():
     print("Simulando ejecución de tarea...")
-    time.sleep(2)  # Simulamos una tarea que tarda 2 segundos en ejecutarse
+    time.sleep(8)  # Simulamos una tarea que tarda 2 segundos en ejecutarse
     print("Tarea completada.")
 
 # Función para manejar la simulación
