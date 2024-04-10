@@ -6,21 +6,21 @@ import time
 Roberto = '175.1.58.24'
 Oliver = '175.1.57.71'
 Jose = '175.1.61.58'
+Uzi = '175.1.60.131'
 
 # Dirección IP del host actual
 my_host = Roberto
 
 # Lista de direcciones IP de los otros hosts en el anillo
-hostList = [Oliver, Jose]
+hostList = [Oliver, Uzi, Jose]
 
 # Puerto para la comunicación
 port = 12345
 
-# Variable para indicar si el host tiene el token o no
-has_token = False
-
 # Función para recibir conexiones de los hosts en el anillo
 def receive_connections(host, port):
+    global has_token  # Declarar has_token como global
+    has_token = True  # Inicializar has_token como False
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     server_socket.bind((host, port))
     server_socket.listen(5)
@@ -29,7 +29,6 @@ def receive_connections(host, port):
     while True:
         conn, addr = server_socket.accept()
         print(f"Connection from {addr}")
-        global has_token
         # Imprimir "token recibido"
         print("Token recibido")
         if not has_token:
@@ -56,6 +55,7 @@ def execute_task():
 # Función para manejar la simulación
 def start_simulation():
     print("Simulación iniciada.")
+    global has_token  # Declarar has_token como global
     while True:
         if has_token:
             for next_host in hostList:
