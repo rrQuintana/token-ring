@@ -1,40 +1,76 @@
 import socket
 import threading
-import sys
 
-def iniciar_servidor(host, port, siguiente_host, siguiente_port):
-    servidor = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    servidor.bind((host, port))
-    servidor.listen(1)
-    print(f"Servidor esperando conexiones en {host}:{port}...")
+# Puerto para la comunicación
+PUERTO = 5000
 
-    conn, addr = servidor.accept()
-    with conn:
-        print(f"Conectado por {addr}")
-        while True:
-            data = conn.recv(1024)
-            if not data:
-                break
-            print(f"Token recibido: {data.decode()}")
-            enviar_token(siguiente_host, siguiente_port, data.decode())
+# Lista de nodos en el anillo
+NODOS = ["175.1.58.24", "175.1.57.71", "175.1.61.58"]
 
-def enviar_token(host, port, token):
-    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
-        sock.connect((host, port))
-        print(f"Enviando token a {host}:{port}")
-        sock.sendall(token.encode())
+# Variable para almacenar el token
+token = False
 
-if __name__ == "__main__":
-    # Configuración de la "computadora" actual y la siguiente en el anillo
-    mi_host = "127.0.0.1"
-    mi_puerto = int(sys.argv[1]) if len(sys.argv) > 1 else 5000
-    siguiente_host = "127.0.0.1"
-    siguiente_puerto = int(sys.argv[2]) if len(sys.argv) > 2 else 5001
+# Función para enviar el token al siguiente nodo
+def enviar_token(nodo):
+    global token
 
-    # Inicia el servidor en un hilo separado
-    threading.Thread(target=iniciar_servidor, args=(mi_host, mi_puerto, siguiente_host, siguiente_puerto), daemon=True).start()
+    # Crear un socket para enviar el token
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    sock.connect((nodo, PUERTO))
 
-    input("Presiona Enter después de iniciar todas las instancias para enviar el token...")
+    # Enviar el token al siguiente nodo
+    sock.sendall(b"TOKEN")
+    sock.close()
 
-    # El primer token se envía manualmente para iniciar el ciclo
-    enviar_token(siguiente_host, siguiente_puerto, "TOKEN_INICIAL")
+    # Indicar que ya no se tiene el token
+    token = False
+
+# Función para escuchar mensajes del anillo
+def escuchar_mensajes():
+    global token
+
+    # Crear un socket para escuchar mensajes
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    sock.bind(('', PUERTO))
+    sock.listen(1)
+
+    while True:
+        # Recibir una conexión
+        conn, addr = sock.accept()
+
+        # Recibir el mensaje
+        mensaje = conn.recv(1024).decode()
+
+        # Si el mensaje es el token, procesarlo
+        if mensaje == "TOKEN":
+            # Indicar que se tiene el token
+            token = True
+
+            # Si hay un siguiente nodo, enviarle el token
+            if NODOS.index(addr[0]) < len(NODOS) - 1:
+                siguiente_nodo = NODOS[NODOS.index(addr[0]) + 1]
+                enviar_token(siguiente_nodo)
+
+        # Cerrar la conexión
+        conn.close()
+
+# Iniciar el hilo para escuchar mensajes
+hilo_escucha = threading.Thread(target=escuchar_mensajes)
+hilo_escucha.start()
+
+# Enviar el token al primer nodo
+enviar_token(NODOS[0])
+
+# Bucle principal para esperar a que el usuario quiera salir
+while True:
+    # Si el usuario tiene el token, puede realizar alguna acción
+    if token:
+        print("¡Tienes el token!")
+        # ...
+
+    # Esperar a que el usuario presione una tecla para salir
+    input("Presiona enter para salir...")
+    break
+
+# Detener el hilo para escuchar mensajes
+hilo_escucha.join()
