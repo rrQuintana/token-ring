@@ -16,6 +16,9 @@ hostList = [Oliver, Jose]
 # Puerto para la comunicación
 port = 12345
 
+# Variable para indicar si el host tiene el token o no
+has_token = False
+
 # Función para recibir conexiones de los hosts en el anillo
 def receive_connections(host, port):
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -26,7 +29,12 @@ def receive_connections(host, port):
     while True:
         conn, addr = server_socket.accept()
         print(f"Connection from {addr}")
-        # Se puede hacer algo con la conexión, pero en este caso no se hace nada.
+        global has_token
+        # Imprimir "token recibido"
+        print("Token recibido")
+        if not has_token:
+            execute_task()
+            has_token = True
         conn.close()
 
 # Función para enviar el token al siguiente host en el anillo
@@ -49,10 +57,11 @@ def execute_task():
 def start_simulation():
     print("Simulación iniciada.")
     while True:
-        execute_task()  # Simular la ejecución de una tarea
-        for next_host in hostList:
-            send_token(next_host, port, "TOKEN")  # Envía el token al siguiente host
-            time.sleep(1)  # Espera 1 segundo antes de enviar el token al siguiente host
+        if has_token:
+            for next_host in hostList:
+                send_token(next_host, port, "TOKEN")  # Envía el token al siguiente host
+            has_token = False
+        time.sleep(1)
 
 if __name__ == "__main__":
     # Iniciar subproceso para recibir conexiones de los hosts
