@@ -6,13 +6,12 @@ import time
 Roberto = '175.1.58.24'
 Oliver = '175.1.57.71'
 Jose = '175.1.61.58'
-Uzi = '175.1.60.131'
 
 # Dirección IP del host actual
 my_host = Roberto
 
 # Lista de direcciones IP de los otros hosts en el anillo
-hostList = [Oliver, Uzi, Jose]
+hostList = [Oliver, Jose]
 
 # Puerto para la comunicación
 port = 12345
@@ -20,7 +19,7 @@ port = 12345
 # Función para recibir conexiones de los hosts en el anillo
 def receive_connections(host, port):
     global has_token  # Declarar has_token como global
-    has_token = True  # Inicializar has_token como False
+    has_token = False  # Inicializar has_token como False
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     server_socket.bind((host, port))
     server_socket.listen(5)
@@ -49,7 +48,7 @@ def send_token(host, port, token):
 # Función para simular la ejecución de una tarea
 def execute_task():
     print("Simulando ejecución de tarea...")
-    time.sleep(8)  # Simulamos una tarea que tarda 2 segundos en ejecutarse
+    time.sleep(2)  # Simulamos una tarea que tarda 2 segundos en ejecutarse
     print("Tarea completada.")
 
 # Función para manejar la simulación
