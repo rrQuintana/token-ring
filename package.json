@@ -1,0 +1,18 @@
+{
+  "name": "token-ring",
+  "version": "1.0.0",
+  "description": "This is a distributed sistem's algorithm based on a leader election using tokens in a node's ring",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node client.js",
+    "dev": "node server.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "i": "^0.3.7",
+    "npm": "^10.5.2",
+    "socket.io-client": "^4.7.5"
+  }
+}
