@@ -2,7 +2,6 @@ const http = require('http');
 const socketio = require('socket.io');
 const readline = require('readline');
 
-// Crear servidor HTTP básico
 const server = http.createServer((req, res) => {
     res.end('Token Ring Server');
 });
@@ -11,7 +10,6 @@ const io = socketio(server);
 const clients = [];
 const clientStrengths = {};
 
-// Interfaz de línea de comandos para iniciar el envío del token
 const rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout
@@ -48,13 +46,13 @@ function passToken(socket) {
     const nextIndex = (index + 1) % clients.length;
     if (clients[nextIndex]) {
         console.log(`Pasando token al cliente ${clients[nextIndex].id}`);
-        clients[nextIndex].emit('message', 'Realizando tarea...');
+        clients[nextIndex].emit('message', 'Token recibido <-');
         setTimeout(() => {
             clients[nextIndex].emit('message', 'Haciendo tarea...');
             setTimeout(() => {
                 clients[nextIndex].emit('message', 'Finalizando tarea...');
                 setTimeout(() => {
-                    clients[nextIndex].emit('token', 'Tienes el token');
+                    clients[nextIndex].emit('token', 'Token enviado ->');
                 }, 1000);
             }, 1000);
         }, 1000);
@@ -79,7 +77,7 @@ server.listen(PORT, () => {
         if (clients.length > 0) {
             clients[0].emit('message', 'Inicio del token');
             setTimeout(() => {
-                clients[0].emit('token', 'Tienes el token');
+                clients[0].emit('token', 'Iniciando anillo');
             }, 4000); // Dar tiempo para mostrar todos los mensajes de "Inicio del token"
         } else {
             console.log('No hay clientes conectados para iniciar el token.');
