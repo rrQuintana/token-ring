@@ -6,7 +6,7 @@ const rl = readline.createInterface({
     output: process.stdout
 });
 
-const serverIP = '127.0.0.1';  // Cambia esto con la IP de tu servidor
+const serverIP = '175.1.49.170';  // Cambia esto con la IP de tu servidor
 
 const socket = io.connect(`http://${serverIP}:3000`);
 
